@@ -32,6 +32,7 @@ def _main():
     ], key=operator.itemgetter(1))
     selected = [code for code, r in reversal_1m_sorted[:5]]
 
+    print('-------------- STOCKS --------------')
     for code in selected:
         print(code)
 

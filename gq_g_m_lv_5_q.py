@@ -1,3 +1,4 @@
+import sys
 import operator
 from typing import List
 
@@ -17,8 +18,16 @@ def momentum(prices: List[float], start, end):
 
 
 def _main():
-    print('Getting stock list of SH000300')
-    csi300 = list(get_index_list('000300'))
+    if len(sys.argv) >= 2:
+        universe = sys.argv[1]
+    else:
+        universe = '000300'
+
+    if universe not in ['000300', '000985']:
+        raise RuntimeError("Universe must be in ['000300', '000985']")
+
+    print('Getting stock list of %s' % universe)
+    csi300 = list(get_index_list(universe))
 
     market_lines = get_k_line_of_stocks(csi300)
     prices = dict([(code, values_of(data, 'close')) for code, data in market_lines.items()])

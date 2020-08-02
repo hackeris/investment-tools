@@ -1,7 +1,8 @@
 import operator
 
-from data import get_indicators_of_stocks
+from data import get_indicators_of_stocks, get_k_line_of_stocks
 from source.eastmoney import get_qfii_holding_volumes
+from source.xueqiu import values_of
 
 
 def _main():
@@ -10,20 +11,28 @@ def _main():
     print('Getting QFII holding of stocks')
     qfii_volumes = list(get_qfii_holding_volumes(report_date))
 
-    qfii_ratio_sorted = sorted(qfii_volumes, key=operator.itemgetter(2), reverse=True)
-    qfii_ratio_selected = [code for code, vol, ratio in qfii_ratio_sorted[:20]]
+    qfii_universe = [code for code, vol, ratio in qfii_volumes]
+    market_lines = get_k_line_of_stocks(qfii_universe)
+    prices = dict([(code, values_of(data, 'close'))
+                   for code, data in market_lines.items()])
+    last_prices = dict([(code, prices.get(code)[-1]) for code in qfii_universe])
 
-    indicators_q = get_indicators_of_stocks(qfii_ratio_selected)
-    indicators_q4 = get_indicators_of_stocks(qfii_ratio_selected, 'Q4')
+    qfii_volumes = [(code, vol, vol * last_prices.get(code), ratio) for code, vol, ratio in qfii_volumes]
+
+    qfii_sorted = sorted(qfii_volumes, key=operator.itemgetter(2), reverse=True)
+    qfii_selected = [code for code, vol, mv, ratio in qfii_sorted[:20]]
+
+    indicators_q = get_indicators_of_stocks(qfii_selected)
+    indicators_q4 = get_indicators_of_stocks(qfii_selected, 'Q4')
 
     roe = dict([(code, indicators_q4.get(code)['list'][0]['avg_roe'][0] / 100)
-                for code in qfii_ratio_selected])
+                for code in qfii_selected])
     revenue_growth = dict([(code, indicators_q.get(code)['list'][0]['total_revenue'][1])
-                           for code in qfii_ratio_selected])
+                           for code in qfii_selected])
 
     roe_sorted = sorted([
         (code, roe.get(code))
-        for code in qfii_ratio_selected
+        for code in qfii_selected
     ], key=operator.itemgetter(1), reverse=True)
     roe_selected = [code for code, m in roe_sorted[:10]]
 

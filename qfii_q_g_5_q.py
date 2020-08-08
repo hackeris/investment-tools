@@ -6,7 +6,7 @@ from source.xueqiu import values_of
 
 
 def _main():
-    report_date = input('QFII Report Day(See from http://data.eastmoney.com/zlsj/2020-03-31-2-2.html): ')
+    report_date = input('QFII Report Day(See from http://data.eastmoney.com/zlsj/2020-03-31-2-2.html), like 2020-03-31: ')
 
     print('Getting QFII holding of stocks')
     qfii_volumes = list(get_qfii_holding_volumes(report_date))

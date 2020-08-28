@@ -2,7 +2,7 @@ import operator
 
 from crawler.xueqiu import values_of
 from crawler.eastmoney import get_qfii_holding_volumes
-from crawler import get_indicators_of_stocks, get_k_line_of_stocks
+from crawler import get_indicators_of_stocks, get_k_line_of_stocks, get_total_revenue_q_of_stocks
 
 
 def _main():
@@ -24,10 +24,11 @@ def _main():
 
     indicators_q = get_indicators_of_stocks(qfii_selected)
     indicators_q4 = get_indicators_of_stocks(qfii_selected, 'Q4')
+    total_revenue_q = get_total_revenue_q_of_stocks(qfii_selected)
 
     roe = dict([(code, indicators_q4.get(code)['list'][0]['avg_roe'][0] / 100)
                 for code in qfii_selected])
-    revenue_growth = dict([(code, indicators_q.get(code)['list'][0]['total_revenue'][1])
+    revenue_growth = dict([(code, total_revenue_q.get(code)[0]['growth_l4q'])
                            for code in qfii_selected])
 
     roe_sorted = sorted([

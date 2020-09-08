@@ -1,6 +1,6 @@
+import sys
 from datetime import datetime
 from urllib import request
-
 from crawler.csi import get_index_list
 
 
@@ -23,6 +23,7 @@ def get_trade_volume_of(symbols):
 
 
 def _main():
+    out_dir = sys.argv[1]
     all_a = list(get_index_list('000985'))
     symbols = ['sh' + code if code[0] == '6' else 'sz' + code
                for code in all_a]
@@ -33,7 +34,7 @@ def _main():
         volumes.extend(items)
 
     today = datetime.now().strftime('%Y%m%d_%H%M%S')
-    with open('out/%s.csv' % today, 'w') as f:
+    with open('%s/%s.csv' % (out_dir, today), 'w') as f:
         for item in volumes:
             f.write('%s,%d\n' % item)
 

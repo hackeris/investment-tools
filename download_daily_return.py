@@ -10,14 +10,14 @@ def chunks(l, n):
         yield l[i:i + n]
 
 
-def get_trade_volume_of(symbols):
+def get_daily_yield_of(symbols):
     url = 'http://hq.sinajs.cn/list=' + ','.join(symbols)
     response = request.urlopen(url)
     lines = response.read().decode('gbk').split('\n')
     items = []
     for symbol, line in zip(symbols, lines[:len(symbols)]):
         fields = line.split(',')
-        volume = int(fields[8])
+        volume = float(fields[3]) / float(fields[2])
         items.append((symbol[2:], volume))
     return items
 
@@ -30,11 +30,11 @@ def _main():
 
     volumes = []
     for chunk in chunks(symbols, 100):
-        items = get_trade_volume_of(chunk)
+        items = get_daily_yield_of(chunk)
         volumes.extend(items)
 
     today = datetime.now().strftime('%Y%m%d_%H%M%S')
-    with open('%s/info_r_%s.csv' % (out_dir, today), 'w') as f:
+    with open('%s/daily_yield_%s.csv' % (out_dir, today), 'w') as f:
         for item in volumes:
             f.write('%s,%d\n' % item)
 

@@ -40,4 +40,10 @@ def _main():
 
 
 if __name__ == '__main__':
-    _main()
+    retries = 5
+    while retries > 0:
+        try:
+            _main()
+            break
+        except Exception as e:
+            retries -= 1
